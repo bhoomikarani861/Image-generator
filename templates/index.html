@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImaginAI Pro Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Imagin<span>AI</span></h1>
+                <span class="badge">PRO</span>
+            </div>
+
+            <div class="settings-group">
+                <label for="style-select"><i class="fas fa-palette"></i> Art Style</label>
+                <select id="style-select">
+                    <option value="none">None (Default)</option>
+                    <option value="photorealistic">Photorealistic</option>
+                    <option value="cinematic">Cinematic</option>
+                    <option value="anime">Anime / Manga</option>
+                    <option value="digital_art">Digital Art</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                </select>
+            </div>
+
+            <div class="settings-group">
+                <label for="ratio-select"><i class="fas fa-crop-simple"></i> Aspect Ratio</label>
+                <div class="ratio-options">
+                    <div class="ratio-btn active" data-ratio="1:1">
+                        <div class="ratio-box square"></div>
+                        <span>1:1</span>
+                    </div>
+                    <div class="ratio-btn" data-ratio="16:9">
+                        <div class="ratio-box landscape"></div>
+                        <span>16:9</span>
+                    </div>
+                    <div class="ratio-btn" data-ratio="9:16">
+                        <div class="ratio-box portrait"></div>
+                        <span>9:16</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="slider-header">
+                    <label for="guidance-scale"><i class="fas fa-sliders"></i> Guidance Scale</label>
+                    <span id="guidance-val">7.5</span>
+                </div>
+                <input type="range" id="guidance-scale" min="1" max="20" step="0.5" value="7.5">
+                <p class="helper-text">Higher values force strict adherence to your prompt.</p>
+            </div>
+
+            <div class="settings-group">
+                <label for="negative-prompt"><i class="fas fa-ban"></i> Negative Prompt</label>
+                <textarea id="negative-prompt" placeholder="What to avoid (e.g. blurry, text, ugly, deformed)..."></textarea>
+            </div>
+            
+            <div class="sidebar-footer">
+                <p>Engine powered by SDXL</p>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <div class="canvas-area">
+                <div class="result-container" id="result-container">
+                    <div class="empty-state" id="empty-state">
+                        <i class="fas fa-image"></i>
+                        <p>Your creation will appear here</p>
+                    </div>
+
+                    <div class="loading-state" id="loading-state" style="display: none;">
+                        <div class="scanning-loader">
+                            <div class="scan-line"></div>
+                        </div>
+                        <p class="loading-text">Synthesizing image...</p>
+                    </div>
+                    
+                    <div class="image-display" id="image-display" style="display: none;">
+                        <img id="generated-image" src="" alt="Generated artwork">
+                        <div class="image-actions">
+                            <a id="download-link" href="#" download="generated-image.png" class="action-btn">
+                                <i class="fas fa-download"></i> Download High-Res
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Gallery -->
+            <div class="history-gallery">
+                <div class="history-header">
+                    <h3><i class="fas fa-history"></i> Recent Creations</h3>
+                    <button id="clear-history" class="icon-btn" title="Clear History"><i class="fas fa-trash-alt"></i></button>
+                </div>
+                <div class="history-track" id="history-track">
+                    <!-- Thumbnails will be injected here -->
+                    <p class="no-history-text">No recent images.</p>
+                </div>
+            </div>
+
+            <!-- Prompt Area -->
+            <div class="prompt-area">
+                <form id="generate-form">
+                    <div class="prompt-input-wrapper">
+                        <button type="button" id="magic-dice-btn" title="Surprise Me!">
+                            <i class="fas fa-dice"></i>
+                        </button>
+                        <textarea id="prompt" placeholder="Describe your vision in detail..." required></textarea>
+                        <button type="submit" id="generate-btn">
+                            <span class="btn-text">Generate</span>
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            <div class="loader-spinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
