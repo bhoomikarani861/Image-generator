@@ -36,10 +36,14 @@ def get_hf_client() -> Optional[InferenceClient]:
 
     # Bulletproof fallback for local testing: read .env file directly
     if not hf_token and os.path.exists('.env'):
-        with open('.env', 'r', encoding='utf-8') as f:
+        with open('.env', 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
-                if line.startswith('HF_TOKEN='):
-                    hf_token = line.split('=', 1)[1].strip()
+                # Strip potential BOM and whitespace
+                clean_line = line.strip('\ufeff').strip()
+                if clean_line.startswith('HF_TOKEN='):
+                    hf_token = clean_line.split('=', 1)[1].strip()
+                    # Remove potential quotes around the token
+                    hf_token = hf_token.strip('\'"')
                     break
 
     if hf_token:
