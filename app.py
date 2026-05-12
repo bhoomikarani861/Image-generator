@@ -9,12 +9,11 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Initialize the InferenceClient
+# Initialize the InferenceClient (will also attempt to load dynamically if missing)
+client = None
 hf_token = os.environ.get("HF_TOKEN")
 if hf_token:
     client = InferenceClient(provider="auto", api_key=hf_token)
-else:
-    client = None
 
 @app.route('/')
 def index():
@@ -22,8 +21,16 @@ def index():
 
 @app.route('/generate', methods=['POST'])
 def generate():
+    global client
+    
+    # Try to dynamically load if it failed during startup
     if not client:
-        return jsonify({'error': 'Hugging Face Token is not configured. Please add HF_TOKEN to your .env file.'}), 500
+        load_dotenv(override=True)
+        hf_token = os.environ.get("HF_TOKEN")
+        if hf_token:
+            client = InferenceClient(provider="auto", api_key=hf_token)
+        else:
+            return jsonify({'error': 'Hugging Face Token is not configured. Please add HF_TOKEN to your .env file.'}), 500
 
     data = request.json
     if not data or 'prompt' not in data:
