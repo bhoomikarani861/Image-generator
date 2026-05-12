@@ -5,6 +5,7 @@ using the Hugging Face Inference API.
 import os
 import io
 import base64
+from typing import Optional
 
 from flask import Flask, request, jsonify, render_template
 from huggingface_hub import InferenceClient
@@ -21,12 +22,12 @@ if INITIAL_HF_TOKEN:
     _client = InferenceClient(provider="auto", api_key=INITIAL_HF_TOKEN)
 
 
-def get_hf_client() -> InferenceClient:
+def get_hf_client() -> Optional[InferenceClient]:
     """
     Retrieve or initialize the Hugging Face InferenceClient.
     Returns the client or None if no token is found.
     """
-    global _client
+    global _client  # pylint: disable=global-statement
     if _client:
         return _client
 
