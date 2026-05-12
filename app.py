@@ -27,10 +27,24 @@ def generate():
     if not client:
         load_dotenv(override=True)
         hf_token = os.environ.get("HF_TOKEN")
+        
+        # Bulletproof fallback for local testing: read .env file directly
+        if not hf_token and os.path.exists('.env'):
+            with open('.env', 'r') as f:
+                for line in f:
+                    if line.startswith('HF_TOKEN='):
+                        hf_token = line.split('=', 1)[1].strip()
+                        break
+
         if hf_token:
             client = InferenceClient(provider="auto", api_key=hf_token)
         else:
-            return jsonify({'error': 'Hugging Face Token is not configured. Please add HF_TOKEN to your .env file.'}), 500
+            error_msg = (
+                "Hugging Face Token is missing! "
+                "If you are on VERCEL, you MUST go to your Vercel Dashboard -> Settings -> Environment Variables and add HF_TOKEN there. "
+                "If you are local, check your .env file."
+            )
+            return jsonify({'error': error_msg}), 500
 
     data = request.json
     if not data or 'prompt' not in data:
