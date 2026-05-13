@@ -11,7 +11,8 @@ from flask import Flask, request, jsonify, render_template
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__)
 
@@ -31,12 +32,13 @@ def get_hf_client() -> Optional[InferenceClient]:
     if _client:
         return _client
 
-    load_dotenv(override=True)
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+    load_dotenv(dotenv_path=env_path, override=True)
     hf_token = os.environ.get("HF_TOKEN")
 
     # Bulletproof fallback for local testing: read .env file directly
-    if not hf_token and os.path.exists('.env'):
-        with open('.env', 'r', encoding='utf-8', errors='ignore') as f:
+    if not hf_token and os.path.exists(env_path):
+        with open(env_path, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
                 # Strip potential BOM and whitespace
                 clean_line = line.strip('\ufeff').strip()
